@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+api-gateway/node_modules/
+vendor/
+__pycache__/
+*.pyc
+
+# Build outputs
+target/
+hospital-backend/target/
+dist/
+frontend/dist/
+build/
+.phpunit.cache
+.phpunit.result.cache
+
+# Environment files & secrets
+.env
+.env.backup
+.env.production
+api-gateway/.env
+*.key
+storage/*.key
+
+# IDE & OS
+.idea/
+.vscode/
+.fleet/
+.DS_Store
+Thumbs.db
+
+# Runtime logs
+*.log
+/storage/logs/*.log
+npm-debug.log
+yarn-error.log

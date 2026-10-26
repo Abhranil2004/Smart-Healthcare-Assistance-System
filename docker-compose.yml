@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: healthcare-postgres
+    environment:
+      POSTGRES_DB: healthcare_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d healthcare_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  hospital-backend:
+    build:
+      context: ./hospital-backend
+    container_name: healthcare-hospital-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/healthcare_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgrespassword
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      JWT_SECRET: HealthcareSystemSecureJwtSecretKeyMustBeAtLeast256BitsLongForHmacSha256Security1234567890
+    ports:
+      - "8081:8081"
+
+  ai-service:
+    build:
+      context: ./ai-service
+    container_name: healthcare-ai-service
+    environment:
+      PORT: 8000
+    ports:
+      - "8000:8000"
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: healthcare-api-gateway
+    depends_on:
+      - hospital-backend
+      - ai-service
+    environment:
+      PORT: 5000
+      HOSPITAL_BACKEND_URL: http://hospital-backend:8081
+      AI_SERVICE_URL: http://ai-service:8000
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: healthcare-frontend
+    depends_on:
+      - api-gateway
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
