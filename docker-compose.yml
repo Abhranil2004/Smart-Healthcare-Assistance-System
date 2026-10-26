@@ -10,8 +10,8 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./backend/database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d healthcare_db"]
       interval: 5s
@@ -20,7 +20,7 @@ services:
 
   hospital-backend:
     build:
-      context: ./hospital-backend
+      context: ./backend/hospital-backend
     container_name: healthcare-hospital-backend
     depends_on:
       postgres:
@@ -36,7 +36,7 @@ services:
 
   ai-service:
     build:
-      context: ./ai-service
+      context: ./backend/ai-service
     container_name: healthcare-ai-service
     environment:
       PORT: 8000
@@ -45,7 +45,7 @@ services:
 
   api-gateway:
     build:
-      context: ./api-gateway
+      context: ./backend/api-gateway
     container_name: healthcare-api-gateway
     depends_on:
       - hospital-backend

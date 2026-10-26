@@ -28,15 +28,41 @@ The system is architected into clean, decoupled tiers matching modern distribute
 
 ---
 
+## 📁 Repository Structure
+
+The project is cleanly divided into two primary folders for effortless collaboration and team member onboarding:
+
+```
+Smart Healthcare Assistance System/
+├── frontend/               # Complete React.js Frontend Application
+│   ├── public/             # Brand logos & static assets
+│   ├── src/                # Components, role-based views, theme & API client
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+│
+├── backend/                # All Backend Microservices, AI, Gateway & DB
+│   ├── hospital-backend/   # Java 24 + Spring Boot 3.4.2 Hospital Management
+│   ├── ai-service/         # Python 3.11 + FastAPI Machine Learning & Triage
+│   ├── api-gateway/        # Node.js + Express.js API Gateway & Orchestrator
+│   └── database/           # PostgreSQL Schema (schema.sql) & Seed Data (seed.sql)
+│
+├── docker-compose.yml      # Multi-container orchestration
+├── start-services.ps1      # 1-Click PowerShell launcher for all 4 services
+└── README.md
+```
+
+---
+
 ## 🏗️ Approved Technology Stack
 
 | Tier / Service | Technology | Key Responsibilities |
 |---|---|---|
-| **Frontend** | React.js, Tailwind CSS, Vanilla CSS (`medinexa-theme.css`), FontAwesome 6 | Preserved visual identity, landing page, symptom triage widget, and 4 role dashboards |
-| **API Gateway** | Node.js, Express.js, Axios, Morgan | Centralized routing, request validation, composite AI triage orchestration |
-| **Hospital Backend** | Java 21/24, Spring Boot 3.4.x, Spring Security, JWT, BCrypt, Spring Data JPA | Appointments state machine, concurrency safeguards, EMR records, role-based access |
-| **AI / ML Service** | Python 3.11, FastAPI, Scikit-learn, XGBoost, TF-IDF | Natural language symptom extraction, emergency red-flag triggers, ML specialty routing |
-| **Database** | PostgreSQL 16+ (with H2 embedded fallback) | Relational persistence: users, patients, doctors, departments, appointments, EMR |
+| **Frontend (`frontend/`)** | React.js, Tailwind CSS, Vanilla CSS (`medinexa-theme.css`), FontAwesome 6 | Preserved visual identity, landing page, symptom triage widget, and 4 role dashboards |
+| **API Gateway (`backend/api-gateway/`)** | Node.js, Express.js, Axios, Morgan | Centralized routing, request validation, composite AI triage orchestration |
+| **Hospital Backend (`backend/hospital-backend/`)** | Java 21/24, Spring Boot 3.4.x, Spring Security, JWT, BCrypt, Spring Data JPA | Appointments state machine, concurrency safeguards, EMR records, role-based access |
+| **AI / ML Service (`backend/ai-service/`)** | Python 3.11, FastAPI, Scikit-learn, XGBoost, TF-IDF | Natural language symptom extraction, emergency red-flag triggers, ML specialty routing |
+| **Database (`backend/database/`)** | PostgreSQL 16+ (with H2 embedded fallback) | Relational persistence: users, patients, doctors, departments, appointments, EMR |
 
 ---
 
@@ -87,32 +113,32 @@ docker-compose up --build
 
 ### Option C: Running Services Individually
 
-1. **AI Service (Python FastAPI)**:
+1. **Frontend (React + Vite)**:
    ```bash
-   cd ai-service
+   cd frontend
+   npm install
+   npm run dev -- --port 3000
+   ```
+
+2. **Hospital Backend (Java Spring Boot)**:
+   ```bash
+   cd backend/hospital-backend
+   mvn spring-boot:run
+   ```
+
+3. **AI Service (Python FastAPI)**:
+   ```bash
+   cd backend/ai-service
    pip install -r requirements.txt
    python train_model.py
    uvicorn main:app --host 0.0.0.0 --port 8000
    ```
 
-2. **Hospital Backend (Java Spring Boot)**:
+4. **API Gateway (Node.js Express)**:
    ```bash
-   cd hospital-backend
-   mvn spring-boot:run
-   ```
-
-3. **API Gateway (Node.js Express)**:
-   ```bash
-   cd api-gateway
+   cd backend/api-gateway
    npm install
    npm start
-   ```
-
-4. **Frontend (React + Vite)**:
-   ```bash
-   cd frontend
-   npm install
-   npm run dev -- --port 3000
    ```
 
 ---
@@ -123,21 +149,21 @@ All services contain standalone unit and integration test suites:
 
 - **AI Service Tests**:
   ```bash
-  cd ai-service
+  cd backend/ai-service
   pytest test_ai_service.py
   # Result: 8 passed (Emergency triggers, ML predictions, validation)
   ```
 
 - **Spring Boot Integration Tests**:
   ```bash
-  cd hospital-backend
+  cd backend/hospital-backend
   mvn clean test
   # Result: 6 passed (JPA context, auth, BCrypt, role isolation, public endpoints)
   ```
 
 - **API Gateway Tests**:
   ```bash
-  cd api-gateway
+  cd backend/api-gateway
   npm test
   # Result: 4 passed (Health checks, request validation, proxy routes)
   ```

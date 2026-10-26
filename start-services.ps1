@@ -10,20 +10,20 @@ $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # 1. AI Service (Python FastAPI)
 Write-Host "[1/4] Launching FastAPI AI Service on port 8000..." -ForegroundColor Green
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\ai-service'; uvicorn main:app --host 0.0.0.0 --port 8000"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\backend\ai-service'; uvicorn main:app --host 0.0.0.0 --port 8000"
 
 # 2. Hospital Backend (Java Spring Boot)
 Write-Host "[2/4] Launching Spring Boot Hospital Backend on port 8081..." -ForegroundColor Green
 $mvnCmd = "C:\Program Files\Apache NetBeans\java\maven\bin\mvn.cmd"
 if (Test-Path $mvnCmd) {
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\hospital-backend'; & '$mvnCmd' spring-boot:run"
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\backend\hospital-backend'; & '$mvnCmd' spring-boot:run"
 } else {
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\hospital-backend'; mvn spring-boot:run"
+    Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\backend\hospital-backend'; mvn spring-boot:run"
 }
 
 # 3. API Gateway (Node.js Express)
 Write-Host "[3/4] Launching Express API Gateway on port 5000..." -ForegroundColor Green
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\api-gateway'; npm start"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$scriptDir\backend\api-gateway'; npm start"
 
 # 4. Frontend (React + Vite)
 Write-Host "[4/4] Launching React Frontend on port 3000..." -ForegroundColor Green
